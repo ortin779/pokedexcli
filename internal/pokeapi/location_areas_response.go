@@ -109,8 +109,8 @@ func (c *Client) GetPokemonInfo(pokemon string) (Pokemon, error) {
 	if len(pokemon) == 0 {
 		return Pokemon{}, fmt.Errorf("the entered area : %s is not a valid area", pokemon)
 	}
-	endpoint := "/pokemon/"
-	fullURL := baseURL + endpoint + pokemon
+	endpoint := "/pokemon/" + pokemon
+	fullURL := baseURL + endpoint
 
 	val, ok := c.cache.Get(fullURL)
 	if ok {
