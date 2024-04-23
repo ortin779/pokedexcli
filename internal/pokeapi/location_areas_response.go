@@ -95,12 +95,61 @@ func (c *Client) GetLocationAreaInfo(area *string) (LocationArea, error) {
 		return LocationArea{}, err
 	}
 
-	locationAreaResp := LocationAreasResponse{}
+	locationAreaResp := LocationArea{}
 	err = json.Unmarshal(data, &locationAreaResp)
 	if err != nil {
 		return LocationArea{}, err
 	}
 
 	c.cache.Add(fullURL, data)
-	return LocationArea{}, nil
+	return locationAreaResp, nil
+}
+
+func (c *Client) GetPokemonInfo(pokemon string) (Pokemon, error) {
+	if len(pokemon) == 0 {
+		return Pokemon{}, fmt.Errorf("the entered area : %s is not a valid area", pokemon)
+	}
+	endpoint := "/pokemon/"
+	fullURL := baseURL + endpoint + pokemon
+
+	val, ok := c.cache.Get(fullURL)
+	if ok {
+		pokemonResp := Pokemon{}
+		err := json.Unmarshal(val, &pokemonResp)
+		if err != nil {
+			return Pokemon{}, err
+		}
+
+		return pokemonResp, nil
+	}
+
+	req, err := http.NewRequest("GET", fullURL, nil)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 399 {
+		return Pokemon{}, fmt.Errorf("bad request %v", resp.StatusCode)
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	pokemonResp := Pokemon{}
+	err = json.Unmarshal(data, &pokemonResp)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	c.cache.Add(fullURL, data)
+	return pokemonResp, nil
 }
