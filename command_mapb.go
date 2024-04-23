@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func callbackMapb(cfg *config) error {
+func callbackMapb(cfg *config, options ...string) error {
 	if cfg.prevPageURL == nil {
 		return fmt.Errorf("error: can't go back, you reached first page")
 	}

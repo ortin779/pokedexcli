@@ -1,8 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func callbackHelp(cfg *config) error {
+func callbackHelp(cfg *config, options ...string) error {
 	fmt.Println("Welcome to Pokedex help menu:")
 	fmt.Println("Here are your available commands")
 
